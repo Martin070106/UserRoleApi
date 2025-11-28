@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UserRoleApi.Models;
+using UserRoleApi.Models.Dtos;
 
 namespace UserRoleApi.Controllers
 {
@@ -14,22 +15,21 @@ namespace UserRoleApi.Controllers
             _context = context;
         }
         [HttpPost]
-        public async Task<ActionResult> AddNewRoleToUser(RoleUser roleUser)
+        public async Task<ActionResult> AddNewRoleToUser(AddNewSwitchDto roleUser)
         {
-            try
+
+            var roleuser = new RoleUser
             {
-                var roleUser = new RoleUser
-                {
-                    UserId = roleUser.UserId,
-                    RoleId = roleUser.RoleId,
-                };
-                await _context.SaveChangesAsync();
-                return Ok(roleUser);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+
+                RoleId = roleUser.RolesId,
+                UserId = roleUser.UsersId
+
+            };
+
+            await _context.roleuser.AddAsync(roleuser);
+            await _context.SaveChangesAsync();
+            return Ok(roleuser);
+
         }
     }
 }

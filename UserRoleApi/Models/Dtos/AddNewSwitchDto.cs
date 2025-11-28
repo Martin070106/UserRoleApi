@@ -2,7 +2,7 @@
 {
     public class AddNewSwitchDto
     {
-        public Guid UserId { get; set; }
-        public Guid RoleId { get; set; }
+        public Guid UsersId { get; set; }
+        public Guid RolesId { get; set; }
     }
 }
