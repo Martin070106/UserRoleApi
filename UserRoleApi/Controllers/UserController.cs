@@ -96,5 +96,19 @@ namespace UserRoleApi.Controllers
                 return StatusCode(400, new { message = ex.Message, result = "" });
             }
         }
+
+        [HttpGet("userWithRoles")]
+        public async Task<ActionResult> GetUserWithRoles(Guid id)
+        {
+            try
+            {
+                var userWtihRoles = _context.users.Include(x => x.RoleUsers).FirstOrDefault(y => y.Id == id);
+                     return StatusCode(201, new { message = "Sikeres frisstés", result = userWtihRoles });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, new { message = ex.Message, result = "" });
+            }
+        }
     }
 }
