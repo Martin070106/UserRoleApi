@@ -73,5 +73,28 @@ namespace UserRoleApi.Controllers
                  return StatusCode(400, new { message = ex.Message, result = "" });
             }
         }
+        [HttpPut]
+        public async Task<ActionResult> UpdateUser(Guid id, UpdateUserDto updateUserDto)
+        {
+            try
+            {
+                var user = await _context.users.FirstOrDefaultAsync(x => x.Id == id);
+                if (user != null)
+                {
+                    user.Name = updateUserDto.Name;
+                    user.Email = updateUserDto.Email;
+                    user.Password = updateUserDto.Password;
+
+                    _context.users.Update(user);
+                    await _context.SaveChangesAsync();
+                    return StatusCode(201, new { message = "Sikeres frisstés", result = user });
+                }
+                return StatusCode(404, new { message = "Sikertelen frissítés", result = user });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, new { message = ex.Message, result = "" });
+            }
+        }
     }
 }

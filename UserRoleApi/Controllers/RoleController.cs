@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using UserRoleApi.Models;
+using UserRoleApi.Models.Dtos;
 
 namespace UserRoleApi.Controllers
 {
@@ -13,6 +15,83 @@ namespace UserRoleApi.Controllers
         {
             _context = context;
         }
+        [HttpPost]
+        public async Task<ActionResult> AddNewRole(AddRoleDto addRoleDto)
+        {
+            try
+            {
+                var role = new Role
+                {
+                    Id = Guid.NewGuid(),
+                    RoleName = addRoleDto.RoleName
+                  
+                };
+                if (role != null)
+                {
+                    await _context.roles.AddAsync(role);
+                    await _context.SaveChangesAsync();
+                    return StatusCode(201, new { message = "Sikeres hozzáadás", result = role });
+                }
+                return StatusCode(404, new { message = "Sikertelen hozzáadás", result = role });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, new { message = ex.Message, result = "" });
+            }
+        }
+        [HttpGet]
+        public async Task<ActionResult> GetAllRole()
+        {
+            try
+            {
+                return Ok(new { message = "Sikeres lekérdezés", result = await _context.roles.ToListAsync() });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, new { message = ex.Message, result = "" });
+            }
+        }
+        [HttpDelete]
+        public async Task<ActionResult> DeleteRole(Guid id)
+        {
+            try
+            {
+                var role = _context.roles.FirstOrDefault(x => x.Id == id);
+                if (role != null)
+                {
+                    _context.Remove(role);
+                    await _context.SaveChangesAsync();
+                    return StatusCode(201, new { message = "Sikeres törlés", result = role });
+                }
+                return StatusCode(404, new { message = "Sikertelen törlés", result = role });
+            }
 
+            catch (Exception ex)
+            {
+                return StatusCode(400, new { message = ex.Message, result = "" });
+            }
+        }
+        [HttpPut]
+        public async Task<ActionResult> UpdateRole(Guid id, UpdateRoleDto updateRoleDto)
+        {
+            try
+            {
+                var role = await _context.roles.FirstOrDefaultAsync(x => x.Id == id);
+                if (role != null)
+                {
+                    role.RoleName = updateRoleDto.RoleName;
+                  
+
+                    _context.roles.Update(role);
+                    await _context.SaveChangesAsync();
+                    return StatusCode(201, new { message = "Sikeres frisstés", result = role });
+                }
+                return StatusCode(404, new { message = "Sikertelen frissítés", result = role });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, new { message = ex.Message, result = "" });
+            }
+        }
     }
 }
